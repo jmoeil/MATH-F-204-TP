@@ -1,0 +1,425 @@
+\documentclass[11pt,oneside,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amsfonts,amsthm,amssymb}
+\usepackage{cancel}
+\usepackage{fancyhdr,fancyvrb}
+\usepackage{lastpage}
+\usepackage{bm}
+\usepackage{pifont}
+\usepackage{mathrsfs}
+\usepackage{calrsfs}
+\usepackage{wasysym}
+\usepackage{dsfont}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{physics}
+\usepackage{siunitx}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{pgfplotstable}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{subfiles}
+\usepackage{systeme}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{lmodern}
+\usepackage{chngcntr}
+\usepackage{textcomp}
+\usepackage{geometry}
+\geometry{top=2cm, bottom=2cm, left=1cm, right=1cm}
+\pgfplotsset{width=10cm,compat=1.16}
+
+% Counter stuff
+\counterwithin{equation}{section}
+\setcounter{tocdepth}{3}
+
+% Random utilities...
+\newcommand{\ti}{\ensuremath{\times}}
+\newcommand{\h}{\ensuremath{\hbar}}
+\newcommand{\med}{\ensuremath\cdot}
+\newcommand\au[2]{\left.#1\right|_{#2}}
+\newcommand{\dif}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\ddif}[2]{\frac{d#1}{d#2}}
+\renewcommand{\d}{\mathrm{d}}
+
+
+% Special formatting for paragraphs
+\titleformat{\paragraph}
+  {\normalfont\normalsize\bfseries}
+  {\theparagraph}
+  {1em}
+  {}
+\titlespacing*{\paragraph}
+  {0pt}
+  {3.25ex plus 1ex minus .2ex}
+  {1.5ex plus .2ex}
+
+% Gestion of headers and footers
+\pagestyle{fancy}
+\renewcommand\headrulewidth{1pt}
+\renewcommand\footrulewidth{1pt}
+\fancyfoot[L]{MOEIL Juian}
+\fancyfoot[C]{Page \thepage/\pageref{LastPage}}
+\fancyfoot[R]{Prof. Glenn Barnich}
+
+% Allow usage of smileys
+%\newfontfamily\DejaSans{DejaVu Sans}
+
+% Defining new theorem environments
+\newtheorem{theorem}{Théorème}[section]
+\newtheorem{definition}[theorem]{Définition}
+\newtheorem{lemma}[theorem]{Lemme}
+\newtheorem{property}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollaire}
+\newtheorem{remark}[theorem]{Remarque}
+\newtheorem{reminder}[theorem]{Rappel théorique}
+\newtheorem{example}[theorem]{Exemple}
+
+\renewcommand{\proofname}{Preuve}
+\renewcommand{\qedsymbol}{\ensuremath{\blacksquare}}
+
+% Setup of hyperref features
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=purple,
+  pdftitle="DM202122 - MOEIL Juian"
+}
+
+% Definition boite grise avec couleur grise définie
+\definecolor{BGgris}{RGB}{222,230,230}
+\newcommand\bg[2]{%
+  \begin{center}%
+    \fcolorbox{white}{BGgris}{%
+      \parbox{.9\linewidth}{%
+        \begin{large} \textit{#1} \end{large} \\%
+        #2%
+      }%
+    }%
+  \end{center}%
+}
+
+% Boite d'alerte
+\definecolor{BGorange}{RGB}{255, 216, 154}
+\newcommand\probleme[1]{%
+  \begin{center}%
+    \fcolorbox{white}{BGorange}{%
+      \parbox{.9\linewidth}{%
+        \begin{large} \textbf{Problème} \end{large} \\%
+        #1%
+      }%
+    }%
+  \end{center}%
+}
+
+\setlength{\fboxsep}{2em}
+
+\title{\textbf{MATH-F-204 - Mécanique Analytique} \\ Travail Personnel}
+\author{$\href{mailto:juian.moeil@ulb.be}{\text{Moeil Juian}}$}
+\date{%
+  \textbf{Université Libre de Bruxelles} \\
+  \emph{Année académique 2021-2022}\\
+  \today
+}
+
+\begin{document}
+    \maketitle
+    \nopagebreak
+
+    \section{Objectif ensuivi}
+    Ce document a pour objectif de redériver la \emph{méthode de Hamilton-Jacobi}, en se basant sur le cours théorique associé à \href{https://www.ulb.be/fr/programme/math-f204}{MATH-F-204}, donné en 2021-2022 par le professeur Glenn Barnich. Dès que possible, chaque construction théorique sera pondérée par un exemple. Le corps principale de ce texte se limitera à 4 pages A4, à compter de la page suivante.
+    
+    \begin{remark}
+      Suite à l'ajout de l'exemple \ref{ex: bal}, la section \ref{sec: separabilite} dépasse la limite de 4 pages. Au lieu d'effacer un travail de \LaTeX ayant déjà été effectué, la section a simplement été grisée à l'instar des notes dactylographiée du cours théorique.  
+    \end{remark}
+    \subsection{Références}\label{sec:bibliographie}
+    Plusieurs sources ont été exploitées pour mener à bien ce travail. En voici une liste \emph{exhaustive}.
+    \begin{itemize}
+        \item Hand, Louis N., and Janet D. Finch. \emph{Analytical Mechanics}. 1st edition, Cambridge University Press, 1998.
+        \item Boulanger, N. \emph{Formulation Hamiltonienne de la Mécanique Classique}.
+        \item Ross, Shane. \href{https://youtu.be/nFpC1s1joRU}{Hamilton-Jacobi Theory | Finding the Best Canonical Transformation | Examples}. Accessed 14 May 2022.
+        \item Barnich, G. \emph{Analytical mechanics: Lagrangian and Hamiltonian formalism}.
+        \item Pletser, V. \emph{Lagrangian and Hamiltonian Analytical Mechanics: Forty Exercises Resolved and Explained}. Singapore: Springer Singapore, 2018.
+        \item Goldstein, H., Charles P. P., and John L. S. \emph{Classical Mechanics}. 3rd ed. San Francisco: Addison Wesley, 2002.
+      
+    \end{itemize}
+
+    \newpage
+
+    \section{Méthode de Hamilton-Jacobi}
+    \subsection{Dérivation de l'équation de Hamilton-Jacobi}
+    La méthode de Hamilton-Jacobi repose sur la théorie des transformations canonique, en ce qu'elle permet de simplifier la résolution d'un problème de mécanique en passant d'un système de coordonnées $(p_i,q^i)$ à un système de nouvelles coordonnées $(P_i,Q^i)$ ayant certaines propriétés rendant la résolution plus simple. La méthode de Hamilton-Jacobi cherche à déterminer la \emph{"meilleure" fonction génératrice}, de sorte que nous puissions avoir la "meilleure" \emph{transformation canonique}.\\
+
+    Dans le cours théorique, l'équation $(9.9)$\footnote{Pour éviter les mauvaises surprises, je joins la version sur laquelle je travaille en copie du mail. Ainsi, si le professeur a effectué des modifications qui auraient changer les numéros des équations, le·a correcteur·trice peut toujours retrouver l'équation mentionnée.} nous apprend qu'à la suite d'un changement de coordonnées, le nouvel Hamiltonien prend la forme $\mathcal{H}(Q^i,P_i,t) = H(q^i,p_i,t) + \dif{F}{t}$, où $F$ est une fonction génératrice de n'importe quel type. Puisque nous voulons trouver le meilleur Hamiltonien $\mathcal{H}$ - c'est-à-dire l'Hamiltonien étant le plus simple à résoudre mathématiquement, posons $\mathcal{H} = 0$. Considérons l'équation:
+    \begin{equation}
+        H(q^i,p_i,t) + \dif{F}{t} = 0.\label{eq:HJ to be}
+    \end{equation}
+    Les équations canonique nous donnent alors directement que $\dot{Q}^i = 0 = \dot{P}_i$. Nous avons donc que nos deux nouvelles coordonnées sont des constantes le long du mouvement. Notons $P_i = \alpha_i$ et $Q^i = \beta^i$. \emph{Les informations temporelles sur le système sont alors contenues dans la transformation canonique}. L'étape suivante consiste donc à choisir un type de fonction génératrice, et d'appliquer les équations associées. Il existe plusieurs conventions. Nous pourrions par exemple fixer une fonction génératrice de type 2, suivant la convention prise par les auteurs du \emph{Analytical Dynamics}, dont les références sont données en \ref{sec:bibliographie}. Ce choix est purement arbitraire : le Dr. Ross prend par exemple parti de choisir une fonction génératrice de type 1. Ce choix étant arbitraire et ne changeant pas la physique du problème, prenons le cas le plus simple à traiter et considérons une fonction génératrice de type 2.
+
+    \paragraph{Laïus sur les fonctions génératrice de type 2}
+
+    Considérons l'action $S = \int_{t_1}^{t_2}Ldt \; = \int_{t_1}^{t_2}\left(p\dot{q}-H\right)dt$. Nous pouvons modifier ce Lagrangien en rajoutant une constante arbitraire de la forme $\frac{dF}{dt}$. La minimisation des deux Lagrangiens, dans des systèmes de coordonnées différents, doivent décrire la même physique. Dès lors, nous devons imposer l'égalité
+    \begin{equation}
+      p_i\dot{q}^i - H(p_i,q^i) = -Q^i\dot{P}_i - \mathcal{H}(P_i,Q^i)+\frac{dF}{dt}(p_i,q^i,P_i,Q^i)\label{eq:2.2}
+    \end{equation}
+    Si $F$ est une fonction génératrice de type 2, alors $F$ dépend des variables $(q^i,P_i)$. Dans ce cas, la différentielle $\frac{dF}{dt}$ vaut $\dif{F}{q}\dot{q}+\dif{F}{P}\dot{P}+\dif{F}{t}$. En injectant ce résultat dans \eqref{eq:2.2}, nous trouvons alors que
+    \begin{equation}
+      p_i\dot{q}^i - H(p_i,q^i) = -Q^i\dot{P}_i - \mathcal{H}(P_i,Q^i)+\dif{F}{q^i}\dot{q}^i+\dif{F}{P_i}\dot{P}_i+\dif{F}{t}.
+    \end{equation}
+    Nous en déduisons que 
+    \begin{align}
+      Q^i &= \dif{F}{P_i} = \beta^i & p_i &= \dif{F}{q^i}\label{eq:multiline}
+    \end{align}
+    \begin{equation}
+      \mathcal{H}(\alpha_i,\beta^i,t) = H(p_i,q^i,t) + \dif{F}{t}
+    \end{equation}
+
+    Les deux premières équations de ce système nous donne le framework grâce auquel nous pouvons retrouver l'équation de Hamilton-Jacobi. Dans ce cadre, nous pouvons réécrire \eqref{eq:HJ to be} sous la forme
+    \begin{equation}
+      H(q^i,\dif{F}{q^i},t) + \dif{F}{t} = 0\label[]{eq:HJ but with F}
+    \end{equation}
+    \emph{Il s'agit là de la fameuse équation de Hamilton-Jacobi}, à la base de la méthode éponyme. Il est d'usage de noter la fonction génératrice $S$ - elle porte alors le nom de \emph{Fonction Principale de Hamilton}. Nous la réécrivons donc sous la forme suivante:
+    \begin{equation}
+      H(q^i,\dif{S}{q^i}\left(q^i,\alpha_i,t\right),t) + \dif{S}{t}\left(q^i,\alpha_i,t\right) = 0.\label{eq:HJ}
+    \end{equation}
+    L'équation \eqref{eq:HJ} correspond à une EDP en $S(q^i,\alpha_i,t)$. L'objectif est donc de trouver $S(q^i,\alpha_i,t)$. Notons que la fonction principale de Hamilton dépend de $N+1$ variables: N variables de position $q^i$, et la variable du temps.
+
+    \paragraph*{Comment résoudre un problème de mécanique sur base de \eqref{eq:HJ}?}\label{sec:kezako}
+
+    Pour commencer, il nous faut l'Hamiltonien associé au problème. Soit $H(q^i,p_i,t)$ l'Hamiltonien associé au problème considéré. Il suffit alors de réécrire $H(q^i,p_i,t)$ dans \eqref{eq:HJ}, en prenant soin de remplacer $p_i$ par $\dif{S}{q^i}$. Nous pouvons ensuite appliquer les méthodes classiques de résolution d'une équation différentielle partielle, par exemple par séparation des variables. Le résultat sera la fonction $S(q^i,\alpha_i)$. En exploitant la première relation dans \eqref{eq:multiline}, nous trouvons l'expression de $P_i(t)$. Nous aurons alors une expression contenant la variable $q^i$ et le temps, qui devra de part nos hypothèses de départ, être égal à une constante $\beta^i$. En isolant, nous pourrons obtenir l'expression de $q^i(t)$. La seconde relation dans \eqref{eq:multiline} permet de trouver $p_i(t)$.\\
+
+    Notons tout de même que cette procédure n'est peut-être pas la plus optimale pour trouver les solutions d'un problème physique : elle reste cependant fondamentale, en ce qu'elle établi un lien entre 
+
+    \subsection{Nature de la fonction génératrice $S(q^i,\alpha_i,t)$}
+
+    Sans justifications, nous avons dans la section précédente renommé la fonction génératrice de type 2 de $F(q^i,P_i,t)$ à $S(q^i,P_i,t)$. Nous le justifions ici. Considérons la dérivée totale de $F(q^i,P_i,t)$.
+    \begin{align}
+      \ddif{F}{t}(q^i,P_i,t) = \dif{F}{q^i}\dot{q}^i+\cancelto{0}{\dif{P_i}{t}}+\dif{F}{t} = p_i\dot{q}^i - H = L
+    \end{align}
+    où nous avons utilisé la seconde relation de \eqref{eq:multiline} et \eqref{eq:HJ but with F}.\\
+
+    Nous trouvons donc que la fonction génératrice $F(q^i,P_i,t)$ est égal à $\int Ldt$ : \emph{il s'agit par définition de l'action!} Cela explique l'usage de noter la fonction génératrice $S(q^i,\alpha_i,t)$.
+
+    \subsection{Hamiltonien indépendant du temps}\label{sec:H ind t}
+
+    Lorsque l'Hamiltonien d'un problème est indépendant du temps, nous pouvons réécrire \eqref{eq:HJ} sous une nouvelle forme. Pour ce faire, il suffit de noter que nous pouvons poser
+    \begin{equation}
+      S(q^i,\alpha_i,t) = W(q^i,\alpha_i) - Et\label{eq:S ind temps}
+    \end{equation}
+    pour tout $E\in\mathbb{R}$. Nous avons introduit la \emph{fonction caractéristique de Hamilton}, $W$. Notons que puisqu'il y a $N$ variables, il y aura $N$ fonctions $W$. Dès lors, l'équation de Hamilton-Jacobi se réécrit
+    \begin{equation}
+      H(q^i,\dif{W}{q^i}\left(q^i,\alpha_i\right) )= E\label{eq:HJ 2}
+    \end{equation}
+    Il faudra alors résoudre pour $W(q^i,\alpha_i)$ pour ensuite l'incorporer dans \eqref{eq:S ind temps}.
+
+    \begin{example}[Oscillateur harmonique à une dimension]
+      L'oscillateur harmonique est l'un des problèmes les plus récurrents de la physique théorique moderne, en partie parceque nous pouvons directement l'appliquer aux théories des champs. Savoir le résoudre dans un nouveau formalisme semble donc être une bonne indication de la capacité de ce formalisme à résoudre de nouveaux problèmes. L'Hamiltonien d'un oscillateur harmonique est bien connu. Dérivons les équations du mouvement via la méthode de Hamilton-Jacobi.
+    \end{example}
+
+    \begin{proof}
+      \begin{equation}
+        H(p,q) = \frac{1}{2}m\left(p^2+\omega^2q^2\right)\label{eq: OH}
+      \end{equation}
+      où $m$ est la masse, $q$ est la position et $q$ est le moment conjugué associé. Puisque cet Hamiltonien est indépendant du temps, nous pouvons poser $S(q,E,t) = W(q,E) - Et$. En particulier, \eqref{eq:HJ 2} donne
+      \begin{equation}
+        \frac{1}{2}m\left(\left(\dif{W}{q}\right)^2+\omega^2q^2\right) = E
+      \end{equation}
+      \begin{align}
+        \dif{W}{q} &= \sqrt{\frac{2E}{m}-\omega^2q^2} & &\Rightarrow & W(q,\alpha_i) &= \int \sqrt{\frac{2E}{m}-\omega^2q^2} \; dq
+      \end{align}
+      Nous en déduisons la valeur de l'action.
+      \begin{equation}
+        S(q,\alpha = E,t) = \int \sqrt{\frac{2E}{m}-\omega^2q^2} \; dq - Et
+      \end{equation}
+      En vertue de la première expression dans \eqref{eq:multiline}, nous avons que
+      \begin{equation}
+        Q = \dif{S}{P} = \dif{S}{E} = \frac{1}{m}\int\frac{dq}{\sqrt{\frac{2E}{m}-\omega^2q^2}} - t = \frac{1}{m\omega}\arcsin\left[\sqrt[]{\frac{\omega^2 m}{2E}}q\right] - t = \beta
+      \end{equation}
+      Nous pouvons donc déduire de l'expression de l'action la \emph{meilleure} transformation canonique. De plus, nous pouvons isoler $q$ dans l'expression précédente, de sorte que
+      \begin{equation}
+        q(t) = \sqrt[]{\frac{2E}{m\omega^2}}\sin\left[m\omega\left(\beta+t\right)\right]\label{eq:q}
+      \end{equation}
+      La constante $Q = \beta$ correspond dès lors à la phase initiale de l'oscillateur harmonique. En invoquant cette fois la seconde relation de \eqref{eq:multiline},
+      \begin{equation}
+        p = \dif{S}{q} = \dif{W}{q} = \sqrt{\frac{2E}{m}-\omega^2q^2} = \sqrt{\frac{2E}{m}-\omega^2\left(\sqrt[]{\frac{2E}{m\omega^2}}\sin\left[\frac{m^2\omega^2}{E}\left(\beta+t\right)\right]\right)^2} = \sqrt{\frac{2E}{m}}\cos\left[m\omega\left(\beta+t\right)\right]\label{eq:p}
+      \end{equation}
+      Nous avons donc les expressions de la position et de l'impulsion, \eqref{eq:q} et \eqref{eq:p} (respectivement) : ces relations correspondent bien aux solutions classiques du problème de l'oscillateur harmonique.  
+    \end{proof}
+
+    Considérons un second exemple de la méthode de Hamilton-Jacobi.
+
+    \begin{example}[Tir balistique]\label{ex: bal}
+      Prenons l'exemple d'un projectile de masse $m$, en mouvement dans un champ de pesanteur uniforme $-g\bm{y}$, lancé avec un angle $\theta$ par rapport à l'horizontale. On suppose (pour simplifier les calculs) que la position initale du projectile est l'origine du repère cartésien $\left(\bm{x},\bm{y},\bm{z}\right)$, et que la vitesse initiale est de la forme $\bm{v}_0 = v_0\cos\theta\bm{x}+v_0\sin\theta\bm{y}$.
+    \end{example}
+    \begin{proof}
+      Prenons la position horizonale $x$ et verticale $y$ comme coordonnées généralisées. Le Lagrangien est dès lors donné par
+      \begin{equation}
+        L(y;\dot{x},\dot{y}) = \frac{1}{2}m\left(\dot{x}^2+\dot{y}^2\right) - mgy
+      \end{equation}
+      Puisque la définition des coordonnées $x$ et $y$ ne dépend pas du temps, et que les forces considérées dérivent d'un potentiel conservatif, l'Hamiltonien se donne simplement par
+      \begin{equation}
+        H(y;p_x,p_y) = \frac{1}{2}m\left(\dot{x}^2+\dot{y}^2\right) + mgy = \frac{1}{2m}\left(p_x^2+p_y^2\right) + mgy
+      \end{equation}
+      où, par définition, $p_i = \dif{L}{q^i}$, ce qui implique que $\dot{x} = \frac{1}{m}p_x$ et $\dot{y} = \frac{1}{m}\dot{y}$. Puisque l'Hamiltonien est indépendant du temps, posons $S(x,y,t) = S_x(x)+S_y(x)-Et$. Suivant la méthode de Hamilton-Jacobi, nous avons alors que 
+      \begin{align}
+        \frac{1}{2m}\left(\left(\dif{S_x}{x}\right)^2+\left(\dif{S_y}{y}\right)^2\right) + mgy &= E\\
+        \frac{1}{2m}\left(\dif{S_y}{y}\right)^2+mgy &= E-\frac{1}{2m}\left(\dif{S_x}{x}\right)^2
+      \end{align}
+      Les deux côtés doivent être égaux à une constante $\alpha$, de sorte que
+      \begin{align}
+        \begin{cases}
+          E-\frac{1}{2m}\left(\dif{S_x}{x}\right)^2 &= \alpha\\
+          \frac{1}{2m}\left(\dif{S_y}{y}\right)^2+mgy &= \alpha
+        \end{cases} &
+        &\Leftrightarrow &
+        &\begin{cases}
+          S_x &= \int \sqrt{2m\left(E-\alpha\right)} \; dx\\
+          S_y &= \int \sqrt{2m(\alpha-mgy)} \; dy
+        \end{cases}
+      \end{align}
+      Nous en déduisons l'expression de la fonction génératrice.
+      \begin{equation}
+        S(x,y;t) = \int \sqrt{2m\left(E-\alpha\right)}dx \; + \int \sqrt{2m(\alpha-mgy)}dy - Et
+      \end{equation}
+      Nous pouvons alors déterminer les équations du mouvement. En notant $X = \eta_1$,
+      \begin{align}
+        \eta_1 = \dif{S}{E} &= \int \sqrt[]{\frac{m}{2\left(E-\alpha\right)}}\;dx - t = \sqrt[]{\frac{m}{2\left(E-\alpha\right)}}x - t & &\Leftrightarrow & x(t) &= \sqrt[]{\frac{2\left(E-\alpha\right)}{m}}\left(t+\eta_1\right)\label{eq: not so x}
+      \end{align}
+      La condition initiale $x(0) = 0$, impose que $\eta_1 = 0$. De même, en notant que $Y = \eta_2$, nous trouvons
+      \begin{equation}
+        \eta_2 = -\sqrt[]{\frac{m}{2\left(E-\alpha\right)}}x+\sqrt[]{\frac{m}{2}}\int \sqrt[]{\frac{1}{\alpha-mgy}}dy = -\sqrt[]{\frac{m}{2\left(E-\alpha\right)}}x-\sqrt{\frac{2}{m}}\frac{\sqrt{\alpha-mgy}}{g}\label{eq: eta 2}
+      \end{equation}
+      En isolant $y(t)$ de cette expression\footnote{Pour les détails, voir l'annexe \ref{A: details}}, nous trouvons que
+      \begin{equation}
+        y = -\frac{mg}{4\left(E-\alpha\right)}x^2-g\eta_2\sqrt{\frac{m}{2\left(E-\alpha\right)}}x+\left(\frac{\alpha}{mg}-\frac{g\eta_2^2}{2}\right)\label{eq: not yet y}
+      \end{equation}
+      De même que pour $x(t)$, la condition initiale $y(0) = 0$ impose que $\eta_2 = \sqrt{\frac{2\alpha}{mg^2}}$. Il nous reste à déterminer la valeur de $\alpha$. Rappelons que $\bm{v}_0 = v_0\cos\theta\bm{x}+v_0\sin\theta\bm{y}$. Dès lors,
+      \begin{align}
+        \dot{y} &= -\left(\frac{mg}{2\left(E-\alpha\right)}x+\sqrt{\frac{\alpha}{g\left(E-\alpha\right)}}\right)\dot{x} & &\Leftrightarrow & v_0\sin\theta &= -\sqrt{\frac{\alpha}{E-\alpha}}v_0\cos\theta & &\Leftrightarrow & \alpha &= E\sin^2\theta
+      \end{align}
+      Nous pouvons alors réécrire les relations \eqref{eq: not so x} et \eqref{eq: not yet y}.
+      \begin{align}
+        &\begin{cases}
+          x(t) &= \sqrt[]{\frac{2E}{m}}\cos\left(\theta\right)t\\
+          y(t) &= -\frac{mg}{4E\cos^2\theta}x^2(t)-\tan\left(\theta\right) x(t)
+        \end{cases} &
+        &\Leftrightarrow &
+        \begin{cases}
+          x(t) &= \sqrt[]{\frac{2E}{m}}\cos\left(\theta\right)t\\
+          y(t) &= -\frac{g}{2}t^2-\sqrt{\frac{2E}{m}}\sin\left(\theta\right) t
+        \end{cases}
+      \end{align}
+    \end{proof}
+    \color{gray}
+    \subsection{Séparabilité}\label{sec: separabilite}
+
+    Il peut sembler peu pratique d'utiliser la procédure introduite ici: nous avons remplacé les équations canoniques par une équation différentielle partielle - or, les équations de ce type peuvent être extrêmement difficile à résoudre. C'est pourquoi la méthode de Hamilton-Jacobi est particulièrement utile pour les systèmes \emph{séparables}, c'est-à-dire les systèmes pouvant être résolus par séparation des variables: cela permet de directement identifier des constantes du mouvement. \textbf{Tous les systèmes physiques ne sont malheureusement pas séparables}, et il faut bien faire attention lorsque nous essayons d'appliquer la méthode de Hamilton-Jacobi à ce type de systèmes: elle ne marchera pas. Illustrons cela avec l'exemple du pendule double.
+
+    \begin{example}[Pendule double]\label{ex: PD}
+      L'analyse des solutions du problème du pendule double ont été traitées dans les séances d'exercices\footnote{Voir l'exercice 4 de la séance 4 pour les détails.}. Nous nous donnons pour objectif ici d'observer que les coordonnées généralisées choisies pour traiter du problème ne sont pas du tout adaptées à sa résolution via la procédure de Hamilton-Jacobi.
+    \end{example}
+    \begin{proof}  
+      Pour simplifier la suite des calculs, limitons-nous au cas $l_1=l_2$ et $m_1=m_2$. Voici l'Hamiltonien décrivant le système considéré\footnote{Les détails de sa dérivation sont dans l'annexe \ref{sec: derivation}.}.
+      \begin{equation}
+        H(\theta_1,\theta_2;p_{\theta_1},p_{\theta_2}) = \frac{\frac{p_{\theta_1}^2}{2}+p_{\theta_2}^2-p_{\theta_1}p_{\theta_2}\cos\left(\theta_1-\theta_2\right)}{ml^2\left(1+\sin^2\left(\theta_1-\theta_2\right)\right)}-mgl\left(2\cos\theta_1+\cos\theta_2\right)
+      \end{equation}
+      Puisque cet Hamiltonien est indépendant du temps, nous pouvons poser $S(q,E,t) = W(q,E) - Et$, de sorte que l'équation de Hamilton-Jacobi se réécrive
+      \begin{equation}
+        \frac{1}{{ml^2\left(1+\sin^2\left(\theta_1-\theta_2\right)\right)}}\left(\frac{1}{2}\left(\dif{W}{\theta_1}\right)^2+\left(\dif{W}{\theta_2}\right)^2-\dif{W}{\theta_1}\dif{W}{\theta_2}\cos\left(\theta_1-\theta_2\right)\right)-mgl\left(2\cos\theta_1+\cos\theta_2\right) = E
+      \end{equation}
+      Pour tenter de résoudre cette EDP, posons $W(\theta_1,\theta_2) = W_1(\theta_1)+W_2(\theta_2)$. Alors,
+      \begin{equation}
+        \frac{1}{{ml^2\left(1+\sin^2\left(\theta_1-\theta_2\right)\right)}}\left(\frac{1}{2}\left(\dif{W_1}{\theta_1}\right)^2+\left(\dif{W_2}{\theta_2}\right)^2-\dif{W_1}{\theta_1}\dif{W_2}{\theta_2}\cos\left(\theta_1-\theta_2\right)\right)-mgl\left(2\cos\theta_1+\cos\theta_2\right) = E\label{eq: PD E}
+      \end{equation}
+      L'étape suivante consisterait à séparer les variables $\theta_1$ et $\theta_2$ apparaissant dans \eqref{eq: PD E}. Cela n'est cependant pas possible, en raison du terme $\dif{W_1}{\theta_1}\dif{W_2}{\theta_2}\cos\left(\theta_1-\theta_2\right)$. Cela montre que les coordonnées que nous avons choisi pour notre système ne sont pas adaptées à une utilisation de la méthode de Hamilton-Jacobi (ou du moins, à une résolution via un ansatz effectuant une séparation des variables additive.)
+    \end{proof}
+
+    \subsubsection{Critère de séparabilité}
+
+    Maintenant que l'importance de la séparabilité a bien été mise en évidence, introduisons, sans aller dans les détails, le principe de séparabilité.
+
+    \begin{definition}
+      Une coordonnée généralisée $q^i$ est dite \emph{séparable} lorsqu'une application dépendant en partie de celle-ci peut-être \emph{séparée} en deux parties, une dépendant uniquement de $q^i$ pour $i\in\mathbb{R}$ fixe, et une dépendant des autres coordonnées généralisées.
+    \end{definition}
+
+    \begin{example}
+      Considérons comme application la fonction principale de Hamilton, $S(q^1,...,q^N;\alpha_1,...,\alpha_N,t)$. Si la coordonnée $q^2$ est prise comme coordonnée séparable, alors nous pouvons écrire 
+      \begin{equation}
+        S(q^1,...,q^N;\alpha_1,...,\alpha_N;t) = S_2(q^2;\alpha_1,...,\alpha_N;t) + S'(q^1,q^3,...,q^N;\alpha_1,...,\alpha_N;t)
+      \end{equation}  
+    \end{example}
+
+    \begin{definition}\label{def: completement separable}
+      L'équation de Hamilton-Jacobi est dîte complètement séparable si toutes les coordonnées généralisées sont séparables.
+    \end{definition}
+    \begin{example}
+      L'Hamiltonien d'un oscillateur harmonique, donné par \eqref{eq: OH}, donne lieu à une équation de Hamilton-Jacobi complètement séparable.
+    \end{example}
+    Si la fonction principale de Hamilton est de la forme
+    \begin{equation}
+      S = \sum_i S_i(q^i;\alpha_1,...,\alpha_N;t),
+    \end{equation}
+    alors l'équation de Hamilton-Jacobi se sépare en $N$ équations de la forme
+    \begin{equation}
+      H_i(q^i;\dif{S_j}{q^j};\alpha_1,...,\alpha_N;t) + \dif{S_j}{t} = 0
+    \end{equation}
+    
+    Il y a une notion encore plus simple de séparabilité si l'Hamiltonien est directement la somme de $N$ parties non couplées, c'est-à-dire si l'Hamiltonien est de la forme
+    \begin{equation}
+      H(q^i,...,q^N;p_i,...,p_N) = \sum_{n = 1}^k H_k(q^k,p_k),
+    \end{equation}
+    alors l'équation de Hamilton-Jacobi se sépare en $N$ équations indépendantes
+    \begin{align}
+      H_k(q^k,\dif{W}{q^k}) &= \alpha_k & E &= \sum_k \alpha_k,
+    \end{align}
+    chaque terme $\alpha_i$ étant une constante. Le problème se sépare alors en $N$ équations à $1D$.\\
+
+    Il faut donc bien vérifier, avant de se lancer dans la résolution d'un problème par la méthode de Hamilton-Jacobi, que l'Hamiltonien du problème est bien séparable en le sens de \ref{def: completement separable}. Le choix de coordonnées généralisées importe grandement dans l'applicabilité de cette méthode, comme le démontre l'exemple \ref{ex: PD}. Mentionnons finalement que pour les systèmes de coordonnées orthogonaux, il existe une série de critères très généraux déterminant le type de potentiel pouvant être séparés. Il s'agit des \emph{conditions de Staeckel}.\\
+    
+    \color{black}
+    \appendix
+      \section{Détails de calcul dans l'exemple \ref{ex: bal}}\label{A: details}
+      \subsection{Déterminer la relation \eqref{eq: not yet y}}
+      On part de l'expression \eqref{eq: eta 2}.
+      \begin{align}
+        \eta_2 &= -\sqrt[]{\frac{m}{2\left(E-\alpha\right)}}x-\sqrt{\frac{2}{m}}\frac{\sqrt{\alpha-mgy}}{g}\\
+        \sqrt[]{\frac{2}{m}}\frac{\sqrt{\alpha-mgy}}{g} &= -\sqrt[]{\frac{m}{2\left(E-\alpha\right)}}x-\eta_2\\
+        \frac{m}{2\left(E-\alpha\right)}x^2-\eta_2^2 + 2\eta_2\;\sqrt[]{\frac{m}{2\left(E-\alpha\right)}}x &= \frac{2}{m}\frac{\alpha-mgy}{g^2}\\
+        \frac{m^2g^2}{4\left(E-\alpha\right)}x^2+\frac{mg^2}{2}\eta_2^2+mg^2\eta_2\;\sqrt[]{\frac{m}{2\left(E-\alpha\right)}}x &= \alpha-mgy\\
+        y &= -\frac{mg}{4\left(E-\alpha\right)}x^2-g\eta_2\sqrt{\frac{m}{2\left(E-\alpha\right)}}x+\left(\frac{\alpha}{mg}-\frac{g\eta_2^2}{2}\right)
+      \end{align}
+
+      \section{Dérivation de l'Hamiltonien du pendule double}\label{sec: derivation}
+    Le Lagrangien du pendule double est 
+    \begin{equation}
+      L(\theta_1,\theta_2;\dot{\theta}_1,\dot{\theta}_2) = ml^2\left(\dot{\theta}_1^2+\frac{1}{2}\dot{\theta}_2+\dot{\theta}_1\dot{\theta}_2\cos\left(\theta_1-\theta_2\right)\right)+mgl\left(2\cos\theta_1+\cos\theta_2\right)
+    \end{equation}
+    Les moments conjugués sont
+      \begin{align}
+        p_{\theta_1} &= \dif{L}{\dot{\theta}_1} = ml^2\left(2\dot{\theta}_1+\dot{\theta}_2\cos\left(\theta_1-\theta_2\right)\right) & p_{\theta_2} &= \dif{L}{\dot{\theta}_2} = ml^2\left(\dot{\theta}_2+\dot{\theta}_1\cos\left(\theta_1-\theta_2\right)\right)
+      \end{align}
+      Nous en déduisons les vitesses généralisées en fonction des moments conjugués.
+      \begin{align}
+        \dot{\theta}_1 &= \frac{p_{\theta_1}-p_{\theta_2}\cos\left(\theta_1-\theta_2\right)}{ml^2\left(1+\sin^2\left(\theta_1-\theta_2\right)\right)} & \dot{\theta}_2 &= \frac{2p_{\theta_2}-p_{\theta_1}\cos\left(\theta_1-\theta_2\right)}{ml^2\left(1+\sin^2\left(\theta_1-\theta_2\right)\right)}\label[]{eq:vit generalisees}
+      \end{align}
+      Nous pourrions faire le (long) calcul de la transformée de Legendre du Lagrangien pour déterminer l'Hamiltonien du problème. Allons ici au plus simple en remarquant que:
+      \begin{enumerate}
+        \item La définition des coordonnées $\theta_1$ et $\theta_2$ ne dépend pas du temps.
+        \item Les forces présentes dans le système dérivent d'un potentiel conservatif (en l'occurence, de la force de pesanteur).
+      \end{enumerate}
+      Nous avons alors que l'Hamiltonien est simplement l'énergie mécanique totale\footnote{Une preuve peut-être trouvée dans le \emph{Goldstein}, en la page 339 de l'édition citée en \ref{sec:bibliographie}.}, $H = T+V$, soit donc
+      \begin{equation}
+        H = ml^2\left(\dot{\theta}_1^2+\frac{1}{2}\dot{\theta}_2+\dot{\theta}_1\dot{\theta}_2\cos\left(\theta_1-\theta_2\right)\right)-mgl\left(2\cos\theta_1+\cos\theta_2\right).
+      \end{equation}
+      En remplacant $\dot{\theta}_1$ et $\dot{\theta}_2$ par les expressions correspondantes dans \eqref{eq:vit generalisees}, nous trouvons que l'Hamiltonien s'écrit
+      \begin{equation}
+        H(\theta_1,\theta_2;p_{\theta_1},p_{\theta_2}) = \frac{\frac{p_{\theta_1}^2}{2}+p_{\theta_2}^2-p_{\theta_1}p_{\theta_2}\cos\left(\theta_1-\theta_2\right)}{ml^2\left(1+\sin^2\left(\theta_1-\theta_2\right)\right)}-mgl\left(2\cos\theta_1+\cos\theta_2\right)
+      \end{equation}
+  \tableofcontents
+\end{document}
